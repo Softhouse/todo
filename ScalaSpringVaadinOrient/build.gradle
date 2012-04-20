@@ -1,0 +1,82 @@
+apply plugin: 'scala'
+apply plugin: 'war'
+
+repositories {
+	mavenCentral()
+	mavenRepo(url: 'http://maven.vaadin.com/vaadin-addons')
+	mavenRepo(url: 'https://oss.sonatype.org/content/groups/public')
+	mavenRepo(url: 'https://oss.sonatype.org/content/repositories/snapshots')
+	mavenRepo(url: 'http://maven.springframework.org/release')
+	mavenRepo(url: 'http://maven.springframework.org/milestone')
+	mavenRepo(url: 'http://repository.springsource.com/maven/bundles/release')
+	mavenRepo(url: 'http://repository.springsource.com/maven/bundles/external')
+}
+
+configurations {
+	gwtTools
+	ajc
+    aspects
+}
+
+dependencies {
+	// AspectJ
+	compile "org.aspectj:aspectjrt:1.6.12"
+	compile "org.aspectj:aspectjweaver:1.6.12"	
+    ajc "org.aspectj:aspectjtools:1.6.12"
+	aspects "org.springframework:spring-aspects:3.1.0.RELEASE"
+
+	// Libraries needed to run the scala tools
+	scalaTools 'org.scala-lang:scala-compiler:2.9.1'
+	scalaTools 'org.scala-lang:scala-library:2.9.1'
+
+	// Libraries needed for scala api
+	compile 'org.scala-lang:scala-library:2.9.1'
+	
+	// Vaadin libraries
+	compile 'com.vaadin:vaadin:6.7.6'
+	compile 'org.vaadin.addons:scaladin:1.0.0'
+	compile 'org.vaadin.addons:refresher:1.1.1'
+	compile 'org.vaadin.addons:filteringtable:0.5.3'
+	compile 'org.vaadin.addons:popupbutton:1.2.1'
+	
+	// Orchid + spring dependencies
+	compile 'se.softhouse.garden:orchid-spring:0.4-SNAPSHOT'
+	
+	// OrientDB
+	compile 'com.orientechnologies:orient-commons:1.0rc9'
+	compile 'com.orientechnologies:orientdb-core:1.0rc9'
+
+	// Needed to compile the widgetset
+	gwtTools 'com.google.gwt:gwt-user:2.3.0'
+	gwtTools 'com.google.gwt:gwt-dev:2.3.0'
+	
+	providedCompile  'javax.servlet:javax.servlet-api:3.0.1'
+}
+
+classes.doFirst {
+    ant.taskdef( resource:"org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties", classpath: configurations.ajc.asPath)
+	ant.iajc(destDir:sourceSets.main.output.classesDir, inpath:sourceSets.main.output.classesDir, aspectPath:configurations.aspects.asPath, classpath:configurations.compile.asPath+":aspectjrt.jar")
+}
+
+task compileWidgetset << {
+	
+	ant.java(classname:'com.google.gwt.dev.Compiler', failOnError: 'true', fork: 'true')
+	{
+		jvmarg(value: '-Xss1024k')
+		arg(line: '-logLevel INFO')
+		arg(line: '-war '+webAppDirName+'/VAADIN/widgetsets')
+		arg(value: findWidgetset("${projectDir}/src/main/resources/"))
+		classpath {
+			pathElement(path: sourceSets.main.resources.srcDirs.join(":"))
+			pathElement(path: configurations.compile.asPath)
+			pathElement(path: configurations.gwtTools.asPath)
+		}
+	}
+}
+
+def findWidgetset(String path) {
+	def files = []
+	new File(path).traverse(type: groovy.io.FileType.FILES, nameFilter: ~/.*\.gwt\.xml$/) { it -> files << it.absolutePath.minus(path).minus(".gwt.xml") .replaceAll("/",".")}
+	if(files.isEmpty()) throw new GradleException('No Widgetset found')
+	files.getAt(0)
+}

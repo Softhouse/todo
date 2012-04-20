@@ -1,0 +1,17 @@
+@import "../chameleon/styles.css";
+@import "blue.css";
+
+
+.v-menubar {
+	border-width: 1px;
+}
+
+.v-menubar-menuitem {
+	border-right: 1px solid; 
+}
+
+.v-menubar-menuitem-last {
+	border-left: 1px solid; 
+	border-right: 0px none; 
+	float: right;
+}
