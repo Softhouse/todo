@@ -1,0 +1,13 @@
+pytodo
+===========
+
+Command-line and REST TODO app, backed by an orgmode file.
+
+Command-line mode uses ~/.plan, REST app can use any file; no access control 
+
+Command-line commands::
+
+  add <caption> [yy-mm-dd [hh:ss]] [--- <body>]
+  view 
+  delete <index>
+  done <index>

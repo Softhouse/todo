@@ -1,0 +1,12 @@
+
+* DONE Parse todo file
+  Start by parsing this file
+
+* DONE Save todo file
+
+* DONE Add item to list
+* TODO List items
+* TODO Modify items 2012-04-20 15:00
+* TODO Datetime
+* TODO Command-line
+
