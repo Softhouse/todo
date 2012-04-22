@@ -1,0 +1,40 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script>
+     $(document).ready(function() {
+      $("input").click(
+        function(event){
+          alert("Start ajax!")
+          $.ajax({url: '/setdone'}).done(function(data) {alert("Done!" + data);});
+        }
+      );
+  });
+  </script>
+  <link rel="stylesheet" href="styles/screen.css" type="text/css" />
+</head>
+<body>
+<div class="container showgrid">
+      <h1>TODO:</h1>
+      <div>{{.Username}}</div> <a href="{{.LoginUrl}}">Login/out</a>
+
+
+  <div class="span-12">
+      <form action="/sign" method="post">
+          <legend>New item:</legend>
+          <div>Title:</div>
+          <input type="text" name="title" rows="1" cols="60"></textarea>
+          <div>Message:</div>
+          <textarea name="body" rows="3" cols="60"></textarea>
+          <div><input type="submit" value="Save"></div>
+      </form>
+      <h3>List:</h3>
+      <!-- List old items -->
+      {{range .TodoItems}}   <!-- . connects to an object in go code -->
+        <input type="checkbox" name="{{.Created}}" {{.Done}} /><b>{{.Title}}</b> {{.Body}}</br>
+      {{end}} <!-- End of range -->
+  </div>
+</div>
+</body>
+</html>
+
