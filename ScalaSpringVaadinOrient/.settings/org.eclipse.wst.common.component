@@ -5,6 +5,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/scala"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/scala"/>
         <property name="java-output-path" value="/ScalaSpringVaadinOrient/target/classes"/>
         <property name="context-root" value="ScalaSpringVaadinOrient"/>
     </wb-module>

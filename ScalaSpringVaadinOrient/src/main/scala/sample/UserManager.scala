@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, Mikael Svahn, Softhouse Consulting AB
+ * Copyright (c) 2012, Mikael Svahn, Softhouse Consulting AB
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ import com.orientechnologies.orient.core.command.OCommandRequest
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery
 import com.orientechnologies.orient.core.record.impl.ODocument
 import java.util.List
+import sample.DomainConversions._
 
 /**
  * @author Mikael Svahn
@@ -32,11 +33,9 @@ import java.util.List
 @Component
 class UserManager {
 
-  @transient
-  @Resource
-  val dbpool: DatabasePool = null
+  @transient @Resource val dbpool: DatabasePool = null
 
-  def onLogin(username: String, password: String): ODocument = {
+  def onLogin(username: String, password: String): User = {
     val db = dbpool.get
     try {
 
@@ -44,9 +43,8 @@ class UserManager {
       val result: List[ODocument] = cmd.execute(username)
 
       if (result.size() > 0) {
-        val user = result.get(0);
-        val pwd: String = user.field("password")
-        if (pwd == password) user else null
+        val user: User = result.get(0);
+        if (user.password == password) user else null
       } else {
         return null
       }
@@ -56,25 +54,18 @@ class UserManager {
   }
 
   def doRegister(username: String, password: String): Boolean = {
-    val db = dbpool.get
-    try {
+    dbpool.execute(db => {
       try {
         val cmd: OCommandRequest = db.command(new OSQLSynchQuery[ODocument]("select * from Users where username = ?"))
-        val result: List[ODocument] = cmd.execute(username)
-        if (result.size() > 0) {
+        if (((cmd.execute(username): java.util.List[ODocument])).size() > 0) {
           return false
         }
       } catch {
         case e: Exception => {}
       }
-      val doc = db.newInstance("Users")
-      doc.field("username", username)
-      doc.field("password", password)
-      doc.save()
-      return true
-    } finally {
-      db.close()
-    }
+      (new User(username = username, password = password): ODocument).save()
+      true
+    })
   }
 
 }

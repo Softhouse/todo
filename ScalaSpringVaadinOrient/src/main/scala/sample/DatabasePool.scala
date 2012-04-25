@@ -54,7 +54,15 @@ class DatabasePool {
   }
 
   def get: ODatabaseDocumentTx = {
-    println(path)
     pool.acquire(path, "admin", "admin")
+  }
+
+  def execute[T](f: ODatabaseDocumentTx => T): T = {
+    val db = get
+    try {
+      f(db)
+    } finally {
+      db.close()
+    }
   }
 }

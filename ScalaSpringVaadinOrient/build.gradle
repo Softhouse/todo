@@ -38,6 +38,7 @@ dependencies {
 	compile 'org.vaadin.addons:refresher:1.1.1'
 	compile 'org.vaadin.addons:filteringtable:0.5.3'
 	compile 'org.vaadin.addons:popupbutton:1.2.1'
+	compile 'org.vaadin.addons:searchfield:2.2.0'
 	
 	// Orchid + spring dependencies
 	compile 'se.softhouse.garden:orchid-spring:0.4-SNAPSHOT'

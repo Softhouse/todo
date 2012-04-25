@@ -34,6 +34,7 @@ import java.util.List
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery
 import com.orientechnologies.orient.core.command.OCommandRequest
 import java.util.Locale
+import sample.DomainConversions._
 
 /**
  * @author Mikael Svahn

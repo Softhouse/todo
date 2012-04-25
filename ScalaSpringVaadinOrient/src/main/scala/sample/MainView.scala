@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, Mikael Svahn, Softhouse Consulting AB
+ * Copyright (c) 2012, Mikael Svahn, Softhouse Consulting AB
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -18,12 +18,11 @@
  */
 
 package sample
-import com.vaadin.ui.VerticalLayout
+
 import org.springframework.beans.factory.annotation.Configurable
 import javax.annotation.Resource
 import se.softhouse.garden.orchid.spring.text.OrchidLocalizedMesageSource
 import org.tepi.filtertable.FilterTable
-import vaadin.scala._
 import com.vaadin.data.util.IndexedContainer
 import com.vaadin.data.Container
 import java.util.Calendar
@@ -34,25 +33,33 @@ import com.vaadin.ui.MenuBar.Command
 import com.vaadin.terminal.ThemeResource
 import scala.collection.JavaConversions.{ iterableAsScalaIterable => _, _ }
 import com.orientechnologies.orient.core.record.impl.ODocument
-import com.vaadin.event.ItemClickEvent.ItemClickListener
 import com.orientechnologies.orient.core.id.ORID
+import com.github.wolfie.refresher.Refresher
+import scala.compat.Platform
+import vaadin.scala._
+import sample.DomainConversions._
 
 /**
- * @author mis
+ * @author Mikael Svahn
  *
  */
 @Configurable
-class MainView extends VerticalLayout {
+class MainView extends com.vaadin.ui.VerticalLayout {
 
   @transient @Resource val msgs: OrchidLocalizedMesageSource = null
   @transient @Resource val todoMgr: TodoManager = null
+  @transient @Resource val timerService: TimerService = null
+  @transient @Resource val userSession: UserSession = null
 
   var cont: IndexedContainer = null
 
   def build(): MainView = {
     setSizeFull()
+    addComponent(new Refresher() {
+      setRefreshInterval(1000)
+    })
     addComponent(new MenuBar(style = "toolbar", width = 100 percent) {
-      addItem("logout", new ThemeResource("../runo/icons/32/cancel.png"), logout()).setStyleName("last")
+      addItem("logout", new ThemeResource("../runo/icons/32/cancel.png"), new MenuBarCommand(_ => getApplication().close())).setStyleName("last")
       addItem("new", new ThemeResource("../runo/icons/32/document-add.png"), createTodo())
     })
     addComponent(new Label(height = 10 px))
@@ -63,14 +70,19 @@ class MainView extends VerticalLayout {
   }
 
   def buildFilterTable(): FilterTable = {
-    new FilterTable() {
+    new FilterTable() with ItemClickListener {
       setSizeFull()
       setContainerDataSource(buildContainer())
       setFiltersVisible(true)
       setColumnReorderingAllowed(true)
       setSelectable(true)
       addStyleName("striped")
-      addListener(onSelect())
+      addItemClickListener(event => {
+        if (event.isDoubleClick()) {
+          var todo = todoMgr.load(event.getItemId().asInstanceOf[ORID]);
+          openTodoEditor(todo.title, todo.date, todo.description, todo.completed, doUpdateTodo(_: Todo, _: com.vaadin.ui.Window))
+        }
+      })
     }
   }
 
@@ -78,24 +90,33 @@ class MainView extends VerticalLayout {
     cont = new IndexedContainer()
     val c = Calendar.getInstance()
 
+    cont.addContainerProperty("expired", classOf[String], null)
     cont.addContainerProperty("title", classOf[String], null)
     cont.addContainerProperty("date", classOf[Date], null)
     cont.addContainerProperty("description", classOf[String], null)
     cont.addContainerProperty("done", classOf[java.lang.Boolean], null)
 
-    val todos = todoMgr.list()
-    todos.foreach(todo => addTodoToContainer(todo))
-
     return cont;
   }
 
-  def addTodoToContainer(todo: ODocument) {
-    var item = cont.addItem(todo.getIdentity())
-    if (item == null) item = cont.getItem(todo.getIdentity())
-    item.getItemProperty("title").setValue(todo.field("title"))
-    item.getItemProperty("date").setValue(todo.field("date"))
-    item.getItemProperty("description").setValue(todo.field("description"))
-    item.getItemProperty("done").setValue(todo.field("completed"))
+  override def attach() {
+    val todos = todoMgr.list(userSession.user.orid)
+    todos.foreach(todo => addTodoToContainer(todo))
+    super.attach()
+  }
+
+  def addTodoToContainer(todo: Todo) {
+    var item = cont.addItem(todo.orid)
+    if (item == null) item = cont.getItem(todo.orid)
+    val now = new Date()
+    item.getItemProperty("expired").setValue(if (todo.date.compareTo(now) <= 0) "Yes" else "No")
+    item.getItemProperty("title").setValue(todo.title)
+    item.getItemProperty("date").setValue(todo.date)
+    item.getItemProperty("description").setValue(todo.description)
+    item.getItemProperty("done").setValue(todo.completed)
+    if (todo.completed) {
+      timerService.add(todo, todo.date, p => onTimeout(p))
+    }
   }
 
   def createTodo(): Command = {
@@ -106,11 +127,11 @@ class MainView extends VerticalLayout {
     }
   }
 
-  def openTodoEditor(title: String, date: Date, description: String, done: Boolean, action: (String, Date, String, Boolean, com.vaadin.ui.Window) => Unit) {
-    getWindow().addWindow(new Window(caption = "Create TODO Item", modal = true) {
+  def openTodoEditor(title: String, date: Date, description: String, done: Boolean, action: (Todo, com.vaadin.ui.Window) => Unit) {
+    getWindow().addWindow(new Window(caption = "Create TODO Item", modal = false) {
       setResizable(false)
       setClosable(false)
-      getLayout().setSizeUndefined();
+      getLayout().setSizeUndefined()
       add(new Label(msgs.get("todo.title")))
       val titleField = add(new TextField(value = title))
       add(new Label(msgs.get("todo.date")))
@@ -121,38 +142,27 @@ class MainView extends VerticalLayout {
       val doneField = add(new CheckBox(checked = done))
       add(new Label(height = 10 px))
       add(new HorizontalLayout(width = 100 percent) {
-        add(new Button(caption = "Add", action = _ => action(titleField.getValue().asInstanceOf[String], dateField.getValue().asInstanceOf[Date], descrField.getValue().asInstanceOf[String], doneField.getValue().asInstanceOf[Boolean], getWindow())))
+        add(new Button(caption = "Add", action = _ => action(new Todo(title = titleField.getValue().asInstanceOf[String], date = dateField.getValue().asInstanceOf[Date], description = descrField.getValue().asInstanceOf[String], completed = doneField.getValue().asInstanceOf[Boolean]), getWindow())))
         add(new Button(caption = "Cancel", action = _ => getWindow().getParent().removeWindow(getWindow())))
       })
     })
   }
 
-  def doCreateTodo(title: String, date: Date, description: String, done: Boolean, window: com.vaadin.ui.Window) {
-    addTodoToContainer(todoMgr.create(title, date, description, done))
+  def doCreateTodo(todo: Todo, window: com.vaadin.ui.Window) {
+    addTodoToContainer(todoMgr.save(todo))
     getWindow().removeWindow(window)
   }
 
-  def doUpdateTodo(todo: ODocument, title: String, date: Date, description: String, done: Boolean, window: com.vaadin.ui.Window) {
-    addTodoToContainer(todoMgr.update(todo, title, date, description, done))
+  def doUpdateTodo(todo: Todo, window: com.vaadin.ui.Window) {
+    todoMgr.save(todo)
     getWindow().removeWindow(window)
+    timerService.remove(i => i.asInstanceOf[Todo].orid.equals(todo.orid))
+    addTodoToContainer(todo)
   }
 
-  def logout(): Command = {
-    new Command() {
-      def menuSelected(selectedItem: com.vaadin.ui.MenuBar#MenuItem) {
-        getApplication().close()
-      }
-    }
-  }
-
-  def onSelect(): com.vaadin.event.ItemClickEvent.ItemClickListener = {
-    new ItemClickListener() {
-      override def itemClick(event: com.vaadin.event.ItemClickEvent) {
-        if (event.isDoubleClick()) {
-          var todo = todoMgr.load(event.getItemId().asInstanceOf[ORID]);
-          openTodoEditor(todo.field("title"), todo.field("date"), todo.field("description"), todo.field("completed"), doUpdateTodo(todo, _: String, _: Date, _: String, _: Boolean, _: com.vaadin.ui.Window))
-        }
-      }
-    }
+  def onTimeout(o: Any) {
+    val todo = o.asInstanceOf[ODocument]
+    println("Timeoout: " + todo.field("title").asInstanceOf[String])
+    getWindow().showNotification(todo.field("title").asInstanceOf[String])
   }
 }

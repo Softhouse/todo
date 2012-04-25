@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, Mikael Svahn, Softhouse Consulting AB
+ * Copyright (c) 2012, Mikael Svahn, Softhouse Consulting AB
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ import javax.annotation.Resource
 import com.orientechnologies.orient.core.record.impl.ODocument
 
 /**
- * @author mis
+ * @author Mikael Svahn
  *
  */
 @Component
@@ -33,7 +33,7 @@ class UserSession {
 
   @transient @Resource val userManager: UserManager = null
 
-  var user: ODocument = null
+  var user: User = null
 
   def onLogin(username: String, password: String): Boolean = {
     user = userManager.onLogin(username, password)

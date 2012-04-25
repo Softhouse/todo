@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, Mikael Svahn, Softhouse Consulting AB
+ * Copyright (c) 2012, Mikael Svahn, Softhouse Consulting AB
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,14 @@ import javax.annotation.Resource
 import com.orientechnologies.orient.core.command.OCommandRequest
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery
 import com.orientechnologies.orient.core.record.impl.ODocument
-import java.util.List
 import java.util.Date
+import java.util.List
+import java.util.ArrayList
 import com.orientechnologies.orient.core.id.ORID
+import sample.DomainConversions._
+import scala.collection.JavaConversions.{ iterableAsScalaIterable => _, _ }
+import scala.collection.mutable.MutableList
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
 
 /**
  * @author Mikael Svahn
@@ -35,53 +40,21 @@ import com.orientechnologies.orient.core.id.ORID
 class TodoManager {
 
   @transient @Resource val dbpool: DatabasePool = null
-  @transient @Resource val userSession: UserSession = null
 
-  def create(title: String, date: Date, description: String, done: Boolean): ODocument = {
-    val db = dbpool.get
-    try {
-      val doc = db.newInstance("Todo")
-      doc.field("title", title)
-      doc.field("date", date)
-      doc.field("description", description)
-      doc.field("completed", done)
-      doc.field("user", userSession.user.getIdentity())
-      doc.save()
-    } finally {
-      db.close()
-    }
+  def save(todo: Todo): Todo = {
+    dbpool.execute(_ => (todo: ODocument).save())
   }
 
-  def update(doc: ODocument, title: String, date: Date, description: String, done: Boolean): ODocument = {
-    val db = dbpool.get
-    try {
-      doc.field("title", title)
-      doc.field("date", date)
-      doc.field("description", description)
-      doc.field("completed", done)
-      doc.save()
-    } finally {
-      db.close()
-    }
-  }
-
-  def list(): List[ODocument] = {
-    val db = dbpool.get
-    try {
+  def list(userId: ORID): List[Todo] = {
+    dbpool.execute(db => {
       val cmd: OCommandRequest = db.command(new OSQLSynchQuery[ODocument]("select * from Todo where user = ?"))
-      cmd.execute(userSession.user.getIdentity())
-    } finally {
-      db.close()
-    }
+      val todos = MutableList.empty[Todo]
+      (cmd.execute(userId): java.util.List[ODocument]).foreach(d => todos += d)
+      return todos
+    })
   }
 
-  def load(id: ORID): ODocument = {
-    val db = dbpool.get
-    try {
-      db.load(id)
-    } finally {
-      db.close()
-    }
+  def load(id: ORID): Todo = {
+    dbpool.execute(db => (db.load(id): ODocument))
   }
-
 }
