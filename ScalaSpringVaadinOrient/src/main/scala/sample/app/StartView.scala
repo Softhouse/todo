@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011, Mikael Svahn, Softhouse Consulting AB
+ * Copyright (c) 2012, Mikael Svahn, Softhouse Consulting AB
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -17,9 +17,8 @@
  * SOFTWARE.
  */
 
-package sample;
+package sample.app;
 
-import org.springframework.beans.factory.annotation.Configurable
 import com.vaadin.Application
 import com.orientechnologies.orient.core.record.impl.ODocument
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
@@ -34,66 +33,56 @@ import java.util.List
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery
 import com.orientechnologies.orient.core.command.OCommandRequest
 import java.util.Locale
-import sample.DomainConversions._
+
+import sample.utils._
+import sample.core._
+import sample.core.DomainConversions._
 
 /**
  * @author Mikael Svahn
  *
  */
-@Configurable
-class TodoApp extends Application {
-
-  @transient @Resource val msgs: OrchidLocalizedMesageSource = null
+class StartView(width: String = 100 percent, height: String = null, margin: Boolean = false, spacing: Boolean = false, caption: String = null, style: String = null, size: Tuple2[String, String] = null) extends {
   @transient @Resource val userSession: UserSession = null
   @transient @Resource val userManager: UserManager = null
+} with VerticalLayout(width, height, margin, spacing, caption, style, size) with DI {
 
-  var root: VerticalLayout = null
-
-  def init() {
-    setTheme(msgs.get("theme"));
-    setMainWindow(new Window(caption = msgs.get("window.title"), width = 100 percent, height = 100 percent) {
-      getLayout().setWidth("100%")
-      getLayout().setHeight("100%")
-      root = add(new VerticalLayout(width = 100 percent, height = 100 percent, style = "micke") {
-        add(createLoginPanel())
-      })
-    })
-  }
+  add(createLoginPanel())
 
   def createLoginPanel() = {
     new HorizontalLayout(width = 100 percent) {
-      add(new Panel(caption = msgs.get("login.title"), width = 200 px) {
-        add(new LoginForm(action = event => onLogin(event)))
+      add(new Panel(caption = MSG.LOGIN_TITLE, width = 200 px) {
+        add(new LoginForm(action = event => onLogin(event)) { setDebugId("loginForm") })
         add(new Label(height = 10 px))
-        add(new LinkButton(caption = msgs.get("login.register"), action = _ => onRegister()))
+        add(new LinkButton(caption = MSG.LOGIN_REGISTER, action = _ => onRegister()))
       }, alignment = Alignment.MIDDLE_CENTER)
     }
   }
 
   def onLogin(event: com.vaadin.ui.LoginForm#LoginEvent) {
     if (userSession.onLogin(event.getLoginParameter("username"), event.getLoginParameter("password"))) {
-      root.removeAllComponents();
-      root.addComponent(new MainView().build())
+      removeAllComponents();
+      add(new MainView().build())
     }
   }
 
   def showLogin() {
-    root.removeAllComponents()
-    root.addComponent(createLoginPanel())
+    removeAllComponents()
+    addComponent(createLoginPanel())
   }
 
   def onRegister() {
-    root.removeAllComponents()
-    root.addComponent(new HorizontalLayout(100 percent) {
-      add(new Panel(caption = msgs.get("register.title"), width = 200 px) {
+    removeAllComponents()
+    addComponent(new HorizontalLayout(100 percent) {
+      add(new Panel(caption = MSG.REGISTER_TITLE, width = 200 px) {
         add(new FormLayout() {
-          add(new Label(msgs.get("register.username")))
+          add(new Label(MSG.REGISTER_USERNAME))
           val usernameField = add(new TextField())
-          add(new Label(msgs.get("register.password")))
+          add(new Label(MSG.REGISTER_PASSWORD))
           val passwordField = add(new TextField())
           add(new HorizontalLayout() {
-            add(new Button(caption = msgs.get("register.button"), action = _ => doRegister(usernameField, passwordField)))
-            add(new Button(caption = msgs.get("register.cancel"), action = _ => showLogin()))
+            add(new Button(caption = MSG.REGISTER_BUTTON, action = _ => doRegister(usernameField, passwordField)))
+            add(new Button(caption = MSG.REGISTER_CANCEL, action = _ => showLogin()))
           })
         })
       }, alignment = Alignment.MIDDLE_CENTER)
@@ -107,7 +96,7 @@ class TodoApp extends Application {
     if (userManager.doRegister(username, password)) {
       showLogin()
     } else {
-      root.getWindow().showNotification(msgs.get("register.fail.title"), Notification.TYPE_ERROR_MESSAGE)
+      getWindow().showNotification(MSG.REGISTER_FAIL_TITLE, Notification.TYPE_ERROR_MESSAGE)
     }
   }
 }

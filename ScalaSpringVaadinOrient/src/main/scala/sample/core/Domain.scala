@@ -17,7 +17,7 @@
  * SOFTWARE.
  */
 
-package sample
+package sample.core
 
 import com.orientechnologies.orient.core.record.impl.ODocument
 import java.util.Date

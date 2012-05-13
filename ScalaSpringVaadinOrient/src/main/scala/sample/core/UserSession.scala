@@ -17,44 +17,26 @@
  * SOFTWARE.
  */
 
-package sample
+package sample.core
 import org.springframework.stereotype.Component
+import org.springframework.context.annotation.Scope
 import javax.annotation.Resource
-import com.orientechnologies.orient.core.command.OCommandRequest
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery
 import com.orientechnologies.orient.core.record.impl.ODocument
-import java.util.Date
-import java.util.List
-import java.util.ArrayList
-import com.orientechnologies.orient.core.id.ORID
-import sample.DomainConversions._
-import scala.collection.JavaConversions.{ iterableAsScalaIterable => _, _ }
-import scala.collection.mutable.MutableList
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
 
 /**
  * @author Mikael Svahn
  *
  */
 @Component
-class TodoManager {
+@Scope("session")
+class UserSession {
 
-  @transient @Resource val dbpool: DatabasePool = null
+  @transient @Resource val userManager: UserManager = null
 
-  def save(todo: Todo): Todo = {
-    dbpool.execute(_ => (todo: ODocument).save())
-  }
+  var user: User = null
 
-  def list(userId: ORID): List[Todo] = {
-    dbpool.execute(db => {
-      val cmd: OCommandRequest = db.command(new OSQLSynchQuery[ODocument]("select * from Todo where user = ?"))
-      val todos = MutableList.empty[Todo]
-      (cmd.execute(userId): java.util.List[ODocument]).foreach(d => todos += d)
-      return todos
-    })
-  }
-
-  def load(id: ORID): Todo = {
-    dbpool.execute(db => (db.load(id): ODocument))
+  def onLogin(username: String, password: String): Boolean = {
+    user = userManager.onLogin(username, password)
+    user != null
   }
 }

@@ -1,5 +1,0 @@
-<aspectj>
-	<weaver>
-		<include within="sample.*" />
-	</weaver>
-</aspectj>

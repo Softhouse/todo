@@ -10,6 +10,10 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>classpath*:META-INF/spring/applicationContext*.xml</param-value>
   </context-param>
+  <context-param>
+  	<param-name>spring.profiles.active</param-name>
+  	<param-value>production</param-value>
+  </context-param>
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
@@ -18,11 +22,11 @@
   </listener>
   <servlet>
     <servlet-name>Scala App</servlet-name>
-    <servlet-class>sample.TouchScreenApplicationServlet</servlet-class>
+    <servlet-class>sample.servlet.TouchScreenApplicationServlet</servlet-class>
     <init-param>
       <description>Vaadin application class to start</description>
       <param-name>application</param-name>
-      <param-value>sample.TodoApp</param-value>
+      <param-value>sample.app.TodoApp</param-value>
     </init-param>
     <init-param>
       <description>Application widgetset</description>

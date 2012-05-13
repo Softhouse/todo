@@ -17,7 +17,7 @@
  * SOFTWARE.
  */
 
-package sample
+package sample.core
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 import scala.concurrent.ops.spawn

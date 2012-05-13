@@ -17,26 +17,37 @@
  * SOFTWARE.
  */
 
-package sample
+package sample.utils
+import org.springframework.web.context.support.WebApplicationContextUtils
 import org.springframework.stereotype.Component
-import org.springframework.context.annotation.Scope
-import javax.annotation.Resource
-import com.orientechnologies.orient.core.record.impl.ODocument
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationListener
+import org.springframework.context.event.ContextRefreshedEvent
+import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor
+import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor
+import org.springframework.context.annotation.AnnotationConfigUtils
+import org.springframework.beans.factory.wiring.BeanConfigurerSupport
 
 /**
  * @author Mikael Svahn
  *
  */
+trait DI {
+  SpringContextManager.inject(this)
+}
+
 @Component
-@Scope("session")
-class UserSession {
+class SpringContextManager extends ApplicationListener[ContextRefreshedEvent] {
 
-  @transient @Resource val userManager: UserManager = null
+  def onApplicationEvent(event: ContextRefreshedEvent) {
+    SpringContextManager.beanConfigurer = event.getApplicationContext().getBean("beanConfigurer").asInstanceOf[BeanConfigurerSupport]
+  }
+}
 
-  var user: User = null
+object SpringContextManager {
+  var beanConfigurer: BeanConfigurerSupport = null
 
-  def onLogin(username: String, password: String): Boolean = {
-    user = userManager.onLogin(username, password)
-    user != null
+  def inject(obj: AnyRef) {
+    beanConfigurer.configureBean(obj);
   }
 }

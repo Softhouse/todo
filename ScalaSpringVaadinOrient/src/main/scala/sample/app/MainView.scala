@@ -17,39 +17,40 @@
  * SOFTWARE.
  */
 
-package sample
+package sample.app
 
-import org.springframework.beans.factory.annotation.Configurable
-import javax.annotation.Resource
-import se.softhouse.garden.orchid.spring.text.OrchidLocalizedMesageSource
-import org.tepi.filtertable.FilterTable
-import com.vaadin.data.util.IndexedContainer
-import com.vaadin.data.Container
 import java.util.Calendar
 import java.util.Date
-import java.util.Random
-import com.vaadin.ui.PopupView
-import com.vaadin.ui.MenuBar.Command
-import com.vaadin.terminal.ThemeResource
 import scala.collection.JavaConversions.{ iterableAsScalaIterable => _, _ }
-import com.orientechnologies.orient.core.record.impl.ODocument
-import com.orientechnologies.orient.core.id.ORID
+import org.springframework.beans.factory.annotation.Configurable
+import org.tepi.filtertable.FilterTable
 import com.github.wolfie.refresher.Refresher
-import scala.compat.Platform
+import com.orientechnologies.orient.core.id.ORID
+import com.orientechnologies.orient.core.record.impl.ODocument
+import com.vaadin.data.util.IndexedContainer
+import com.vaadin.data.Container
+import com.vaadin.terminal.ThemeResource
+import com.vaadin.ui.MenuBar.Command
+import javax.annotation.Resource
+import sample.core._
+import sample.core.DomainConversions._
+import sample.utils.DI
+import se.softhouse.garden.orchid.spring.text.OrchidLocalizedMesageSource
 import vaadin.scala._
-import sample.DomainConversions._
+import com.vaadin.ui.CustomTable
+import com.vaadin.ui.CustomTable.ColumnGenerator
+import sample.utils.SmartTable
 
 /**
  * @author Mikael Svahn
  *
  */
-@Configurable
-class MainView extends com.vaadin.ui.VerticalLayout {
-
+class MainView extends {
   @transient @Resource val msgs: OrchidLocalizedMesageSource = null
   @transient @Resource val todoMgr: TodoManager = null
   @transient @Resource val timerService: TimerService = null
   @transient @Resource val userSession: UserSession = null
+} with com.vaadin.ui.VerticalLayout with DI {
 
   var cont: IndexedContainer = null
 
@@ -59,8 +60,8 @@ class MainView extends com.vaadin.ui.VerticalLayout {
       setRefreshInterval(1000)
     })
     addComponent(new MenuBar(style = "toolbar", width = 100 percent) {
-      addItem("logout", new ThemeResource("../runo/icons/32/cancel.png"), new MenuBarCommand(_ => getApplication().close())).setStyleName("last")
-      addItem("new", new ThemeResource("../runo/icons/32/document-add.png"), createTodo())
+      addItem(MSG.MENU_LOGOUT, new ThemeResource("../runo/icons/32/cancel.png"), new MenuBarCommand(_ => getApplication().close())).setStyleName("last")
+      addItem(MSG.MENU_NEW, new ThemeResource("../runo/icons/32/document-add.png"), createTodo())
     })
     addComponent(new Label(height = 10 px))
     val table = buildFilterTable()
@@ -70,13 +71,15 @@ class MainView extends com.vaadin.ui.VerticalLayout {
   }
 
   def buildFilterTable(): FilterTable = {
-    new FilterTable() with ItemClickListener {
+    new FilterTable() with SmartTable with ItemClickListener {
       setSizeFull()
       setContainerDataSource(buildContainer())
       setFiltersVisible(true)
       setColumnReorderingAllowed(true)
       setSelectable(true)
+      setColumnHeaders(Array(MSG.TODO_EXPIRED, MSG.TODO_TITLE, MSG.TODO_DATE, MSG.TODO_DESCRIPTION, MSG.TODO_DONE))
       addStyleName("striped")
+      addGeneratedColumn("date", v => MSG.TODO_VALUE_DATE(value = v.asInstanceOf[Date]))
       addItemClickListener(event => {
         if (event.isDoubleClick()) {
           var todo = todoMgr.load(event.getItemId().asInstanceOf[ORID]);
@@ -131,19 +134,19 @@ class MainView extends com.vaadin.ui.VerticalLayout {
     getWindow().addWindow(new Window(caption = "Create TODO Item", modal = false) {
       setResizable(false)
       setClosable(false)
-      getLayout().setSizeUndefined()
-      add(new Label(msgs.get("todo.title")))
+      getContent().setSizeUndefined()
+      add(new Label(MSG.TODO_TITLE))
       val titleField = add(new TextField(value = title))
-      add(new Label(msgs.get("todo.date")))
+      add(new Label(MSG.TODO_DATE))
       val dateField = add(new PopupDateField(value = date))
-      add(new Label(msgs.get("todo.description")))
+      add(new Label(MSG.TODO_DESCRIPTION))
       val descrField = add(new TextArea(value = description))
-      add(new Label(msgs.get("todo.done")))
+      add(new Label(MSG.TODO_DONE))
       val doneField = add(new CheckBox(checked = done))
       add(new Label(height = 10 px))
       add(new HorizontalLayout(width = 100 percent) {
-        add(new Button(caption = "Add", action = _ => action(new Todo(title = titleField.getValue().asInstanceOf[String], date = dateField.getValue().asInstanceOf[Date], description = descrField.getValue().asInstanceOf[String], completed = doneField.getValue().asInstanceOf[Boolean]), getWindow())))
-        add(new Button(caption = "Cancel", action = _ => getWindow().getParent().removeWindow(getWindow())))
+        add(new Button(caption = MSG.TODO_ADD, action = _ => action(new Todo(title = titleField.getValue().asInstanceOf[String], date = dateField.getValue().asInstanceOf[Date], description = descrField.getValue().asInstanceOf[String], completed = doneField.getValue().asInstanceOf[Boolean]), getWindow())))
+        add(new Button(caption = MSG.TODO_CANCEL, action = _ => getWindow().getParent().removeWindow(getWindow())))
       })
     })
   }
@@ -162,7 +165,6 @@ class MainView extends com.vaadin.ui.VerticalLayout {
 
   def onTimeout(o: Any) {
     val todo = o.asInstanceOf[ODocument]
-    println("Timeoout: " + todo.field("title").asInstanceOf[String])
     getWindow().showNotification(todo.field("title").asInstanceOf[String])
   }
 }

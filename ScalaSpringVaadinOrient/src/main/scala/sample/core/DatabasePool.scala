@@ -17,7 +17,7 @@
  * SOFTWARE.
  */
 
-package sample;
+package sample.core;
 
 import javax.annotation.PostConstruct
 import javax.annotation.Resource
@@ -26,17 +26,24 @@ import se.softhouse.garden.orchid.spring.text.OrchidLocalizedMesageSource
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentPool
 import javax.annotation.PreDestroy
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
+import org.springframework.context.annotation.Profile
 
 /**
  * @author Mikael Svahn
  *
  */
+trait DatabasePool {
+  def get: ODatabaseDocumentTx
+  def execute[T](f: ODatabaseDocumentTx => T): T
+}
+
 @Component
-class DatabasePool {
+@Profile(Array("production"))
+class LocalDatabasePool extends DatabasePool {
 
   private val pool: ODatabaseDocumentPool = new ODatabaseDocumentPool()
 
-  var path: String = "local:" + System.getProperty("user.home") + "/sampledb"
+  val path: String = "local:" + System.getProperty("user.home") + "/sampledb"
 
   @PostConstruct
   def postConstruct() {

@@ -17,14 +17,14 @@
  * SOFTWARE.
  */
 
-package sample
+package sample.core
 import org.springframework.stereotype.Component
 import javax.annotation.Resource
 import com.orientechnologies.orient.core.command.OCommandRequest
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery
 import com.orientechnologies.orient.core.record.impl.ODocument
 import java.util.List
-import sample.DomainConversions._
+import DomainConversions._
 
 /**
  * @author Mikael Svahn
@@ -36,11 +36,9 @@ class UserManager {
   @transient @Resource val dbpool: DatabasePool = null
 
   def onLogin(username: String, password: String): User = {
-    val db = dbpool.get
-    try {
-
+    dbpool.execute(db => {
       val cmd: OCommandRequest = db.command(new OSQLSynchQuery[ODocument]("select * from Users where username = ?"))
-      val result: List[ODocument] = cmd.execute(username)
+      val result: java.util.List[ODocument] = cmd.execute(username)
 
       if (result.size() > 0) {
         val user: User = result.get(0);
@@ -48,9 +46,7 @@ class UserManager {
       } else {
         return null
       }
-    } finally {
-      db.close()
-    }
+    })
   }
 
   def doRegister(username: String, password: String): Boolean = {

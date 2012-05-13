@@ -14,23 +14,16 @@ repositories {
 
 configurations {
 	gwtTools
-	ajc
-    aspects
 }
 
 dependencies {
-	// AspectJ
-	compile "org.aspectj:aspectjrt:1.6.12"
-	compile "org.aspectj:aspectjweaver:1.6.12"	
-    ajc "org.aspectj:aspectjtools:1.6.12"
-	aspects "org.springframework:spring-aspects:3.1.0.RELEASE"
-
 	// Libraries needed to run the scala tools
 	scalaTools 'org.scala-lang:scala-compiler:2.9.1'
 	scalaTools 'org.scala-lang:scala-library:2.9.1'
 
 	// Libraries needed for scala api
 	compile 'org.scala-lang:scala-library:2.9.1'
+	compile 'org.scalaj:scalaj-collection_2.9.1:1.2'
 	
 	// Vaadin libraries
 	compile 'com.vaadin:vaadin:6.7.6'
@@ -41,7 +34,7 @@ dependencies {
 	compile 'org.vaadin.addons:searchfield:2.2.0'
 	
 	// Orchid + spring dependencies
-	compile 'se.softhouse.garden:orchid-spring:0.4-SNAPSHOT'
+	compile 'se.softhouse.garden:orchid-spring:0.6-SNAPSHOT'
 	
 	// OrientDB
 	compile 'com.orientechnologies:orient-commons:1.0rc9'
@@ -52,11 +45,10 @@ dependencies {
 	gwtTools 'com.google.gwt:gwt-dev:2.3.0'
 	
 	providedCompile  'javax.servlet:javax.servlet-api:3.0.1'
-}
-
-classes.doFirst {
-    ant.taskdef( resource:"org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties", classpath: configurations.ajc.asPath)
-	ant.iajc(destDir:sourceSets.main.output.classesDir, inpath:sourceSets.main.output.classesDir, aspectPath:configurations.aspects.asPath, classpath:configurations.compile.asPath+":aspectjrt.jar")
+	
+	testCompile 'junit:junit:4.10'
+	testCompile 'com.google.gwt:gwt-user:2.3.0'
+	testCompile 'org.springframework:spring-instrument:3.0.5.RELEASE'
 }
 
 task compileWidgetset << {

@@ -1,4 +1,4 @@
-package sample;
+package sample.app;
 
 import com.vaadin.terminal.gwt.client.ApplicationConnection
 import scala.io.Source
@@ -7,22 +7,20 @@ import se.softhouse.garden.orchid.spring.text.OrchidLocalizedMesageSource
 import javax.annotation.Resource
 import org.springframework.beans.factory.annotation.Configurable
 import se.softhouse.garden.orchid.commons.text.OrchidMessage.arg
+import sample.utils.DI
 
-@Configurable
-class LoginForm(usernameCaption: String = "login.username",
-  passwordCaption: String = "login.password",
-  loginButtonCaption: String = "login.button",
+class LoginForm(usernameCaption: String = MSG.LOGIN_USERNAME,
+  passwordCaption: String = MSG.LOGIN_PASSWORD,
+  loginButtonCaption: String = MSG.LOGIN_BUTTON,
   action: com.vaadin.ui.LoginForm#LoginEvent => Unit = null,
-  messages: OrchidLocalizedMesageSource = null) extends com.vaadin.ui.LoginForm {
+  messages: OrchidLocalizedMesageSource = null) extends {
+  @transient @Resource val msgs: OrchidLocalizedMesageSource = messages;
+} with com.vaadin.ui.LoginForm with DI {
 
   setUsernameCaption(usernameCaption)
-  setPasswordCaption("login.password")
-  setLoginButtonCaption("login.button")
+  setPasswordCaption(MSG.LOGIN_PASSWORD.key)
+  setLoginButtonCaption(MSG.LOGIN_BUTTON.key)
   if (action != null) addListener(action)
-
-  @transient
-  @Resource
-  val msgs: OrchidLocalizedMesageSource = messages;
 
   override def getLoginHTML() = {
     val appUri = getApplication().getURL().toString() + getWindow().getName() + "/"
