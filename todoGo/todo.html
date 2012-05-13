@@ -1,39 +1,48 @@
 <html>
 <head>
+  <title>TODO:</title>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <script>
      $(document).ready(function() {
-      $("input").click(
+      $(".cb").click(
         function(event){
-          alert("Start ajax!")
-          $.ajax({url: '/setdone'}).done(function(data) {alert("Done!" + data);});
+          $.ajax({
+            url: '/ajax',
+            type: 'POST',
+            data: {created: $(this).attr('name') , checked: $(this).attr('checked')}
+          });
         }
       );
   });
   </script>
-  <link rel="stylesheet" href="styles/screen.css" type="text/css" />
+  <link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.19/themes/ui-lightness/jquery-ui.css" type="text/css" />
 </head>
 <body>
-<div class="container showgrid">
+<div class="ui-widget">
+<div class="ui-widget-header">
       <h1>TODO:</h1>
       <div>{{.Username}}</div> <a href="{{.LoginUrl}}">Login/out</a>
 
+</div>
+<div class="ui-widget-content">
+    <h3>New item:</h3>
+    <form action="/sign" method="post">
+        <div>Title:</div>
+        <input type="text" name="title" rows="1" cols="60"></textarea>
+        <div>Message:</div>
+        <textarea name="body" rows="3" cols="60"></textarea>
+        <div><input type="submit" value="Save"></div>
+    </form>
+    <h3>List:</h3>
+    <table>
+        <tr><th>Done</th><th>Title</th><th>Description</th></tr>
+        <!-- List old items -->
+        {{range .TodoItems}}   <!-- . connects to an object in go code -->
+        <tr><td><input class="cb" type="checkbox" name="{{.Created}}" {{.Done}} /></td><td><b>{{.Title}}</b></td><td> {{.Body}}</td></tr>
+        {{end}} <!-- End of range -->
+    <table>
 
-  <div class="span-12">
-      <form action="/sign" method="post">
-          <legend>New item:</legend>
-          <div>Title:</div>
-          <input type="text" name="title" rows="1" cols="60"></textarea>
-          <div>Message:</div>
-          <textarea name="body" rows="3" cols="60"></textarea>
-          <div><input type="submit" value="Save"></div>
-      </form>
-      <h3>List:</h3>
-      <!-- List old items -->
-      {{range .TodoItems}}   <!-- . connects to an object in go code -->
-        <input type="checkbox" name="{{.Created}}" {{.Done}} /><b>{{.Title}}</b> {{.Body}}</br>
-      {{end}} <!-- End of range -->
-  </div>
+</div>
 </div>
 </body>
 </html>
