@@ -25,6 +25,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery
 import com.orientechnologies.orient.core.record.impl.ODocument
 import java.util.List
 import DomainConversions._
+import javax.annotation.PostConstruct
 
 /**
  * @author Mikael Svahn
@@ -35,9 +36,18 @@ class UserManager {
 
   @transient @Resource val dbpool: DatabasePool = null
 
+  private var SCHEMA_NAME = "Users"
+
+  @PostConstruct
+  def init() {
+    dbpool.execute(db =>
+      if (db.getMetadata.getSchema.getClass(SCHEMA_NAME) == null)
+        db.getMetadata.getSchema.createClass(SCHEMA_NAME))
+  }
+
   def onLogin(username: String, password: String): User = {
     dbpool.execute(db => {
-      val cmd: OCommandRequest = db.command(new OSQLSynchQuery[ODocument]("select * from Users where username = ?"))
+      val cmd: OCommandRequest = db.command(new OSQLSynchQuery[ODocument]("select * from " + SCHEMA_NAME + " where username = ?"))
       val result: java.util.List[ODocument] = cmd.execute(username)
 
       if (result.size() > 0) {
@@ -52,7 +62,7 @@ class UserManager {
   def doRegister(username: String, password: String): Boolean = {
     dbpool.execute(db => {
       try {
-        val cmd: OCommandRequest = db.command(new OSQLSynchQuery[ODocument]("select * from Users where username = ?"))
+        val cmd: OCommandRequest = db.command(new OSQLSynchQuery[ODocument]("select * from " + SCHEMA_NAME + " where username = ?"))
         if (((cmd.execute(username): java.util.List[ODocument])).size() > 0) {
           return false
         }

@@ -31,20 +31,22 @@ import scala.collection.JavaConversions.{ iterableAsScalaIterable => _, _ }
  */
 
 class DomainObject(var className: String, val orid: ORID)
-class User(orid: ORID = null, var username: String = null, var password: String = null) extends DomainObject("User", orid)
-class Todo(orid: ORID = null, var title: String = null, var date: Date = null, var description: String = null, var completed: Boolean = false, var userId: ORID = null) extends DomainObject("Todo", orid)
+case class User(override val orid: ORID = null, var username: String = null, var password: String = null) extends DomainObject("Users", orid)
+case class Todo(override val orid: ORID = null, var title: String = null, var date: Date = null, var description: String = null, var completed: Boolean = false, var user: ORID = null) extends DomainObject("Todo", orid)
 
 object DomainConversions {
 
-  implicit def doc2Todo(from: ODocument): Todo = fromDoc(from, new Todo(from.getIdentity()))
-  implicit def doc2User(from: ODocument): User = fromDoc(from, new User(from.getIdentity()))
+  implicit def toTodo(from: ODocument): Todo = fromDoc(from, new Todo(from.getIdentity()))
+  implicit def toUser(from: ODocument): User = fromDoc(from, new User(from.getIdentity()))
 
   def fromDoc[T](from: ODocument, to: T): T = {
     val fields = to.getClass().getDeclaredFields()
     val methods = to.getClass().getMethods()
+    from.setLazyLoad(false)
     fields.foreach(f => {
       val method = to.getClass().getMethod(f.getName() + "_$eq", f.getType())
-      if (method != null) method.invoke(to, from.field(f.getName()))
+      val field: AnyRef = from.field(f.getName())
+      if (method != null) method.invoke(to, field)
     })
     to
   }

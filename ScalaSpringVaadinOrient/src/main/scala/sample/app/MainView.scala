@@ -79,11 +79,13 @@ class MainView extends {
       setSelectable(true)
       setColumnHeaders(Array(MSG.TODO_EXPIRED, MSG.TODO_TITLE, MSG.TODO_DATE, MSG.TODO_DESCRIPTION, MSG.TODO_DONE))
       addStyleName("striped")
+      addGeneratedColumn("expired", v => { new CheckBox(checked = "Yes" == v) { setReadOnly(true) } })
       addGeneratedColumn("date", v => MSG.TODO_VALUE_DATE(value = v.asInstanceOf[Date]))
+      addGeneratedColumn("done", v => { new CheckBox(checked = v.asInstanceOf[Boolean]) { setReadOnly(true) } })
       addItemClickListener(event => {
         if (event.isDoubleClick()) {
           var todo = todoMgr.load(event.getItemId().asInstanceOf[ORID]);
-          openTodoEditor(todo.title, todo.date, todo.description, todo.completed, doUpdateTodo(_: Todo, _: com.vaadin.ui.Window))
+          openTodoEditor(todo, doUpdateTodo(_: Todo, _: com.vaadin.ui.Window))
         }
       })
     }
@@ -125,27 +127,27 @@ class MainView extends {
   def createTodo(): Command = {
     new Command() {
       def menuSelected(selectedItem: com.vaadin.ui.MenuBar#MenuItem) {
-        openTodoEditor("", new Date(), "", false, doCreateTodo)
+        openTodoEditor(new Todo(), doCreateTodo)
       }
     }
   }
 
-  def openTodoEditor(title: String, date: Date, description: String, done: Boolean, action: (Todo, com.vaadin.ui.Window) => Unit) {
+  def openTodoEditor(todo: Todo, action: (Todo, com.vaadin.ui.Window) => Unit) {
     getWindow().addWindow(new Window(caption = "Create TODO Item", modal = false) {
       setResizable(false)
       setClosable(false)
       getContent().setSizeUndefined()
       add(new Label(MSG.TODO_TITLE))
-      val titleField = add(new TextField(value = title))
+      val titleField = add(new TextField(value = todo.title))
       add(new Label(MSG.TODO_DATE))
-      val dateField = add(new PopupDateField(value = date))
+      val dateField = add(new PopupDateField(value = todo.date))
       add(new Label(MSG.TODO_DESCRIPTION))
-      val descrField = add(new TextArea(value = description))
+      val descrField = add(new TextArea(value = todo.description))
       add(new Label(MSG.TODO_DONE))
-      val doneField = add(new CheckBox(checked = done))
+      val doneField = add(new CheckBox(checked = todo.completed))
       add(new Label(height = 10 px))
       add(new HorizontalLayout(width = 100 percent) {
-        add(new Button(caption = MSG.TODO_ADD, action = _ => action(new Todo(title = titleField.getValue().asInstanceOf[String], date = dateField.getValue().asInstanceOf[Date], description = descrField.getValue().asInstanceOf[String], completed = doneField.getValue().asInstanceOf[Boolean]), getWindow())))
+        add(new Button(caption = MSG.TODO_ADD, action = _ => action(todo.copy(title = titleField.getValue().asInstanceOf[String], date = dateField.getValue().asInstanceOf[Date], description = descrField.getValue().asInstanceOf[String], completed = doneField.getValue().asInstanceOf[Boolean]), getWindow())))
         add(new Button(caption = MSG.TODO_CANCEL, action = _ => getWindow().getParent().removeWindow(getWindow())))
       })
     })

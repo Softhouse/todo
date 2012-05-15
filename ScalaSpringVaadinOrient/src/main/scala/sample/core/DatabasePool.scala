@@ -33,7 +33,8 @@ import org.springframework.context.annotation.Profile
  *
  */
 trait DatabasePool {
-  def get: ODatabaseDocumentTx
+  def acquire: ODatabaseDocumentTx
+  def release(db: ODatabaseDocumentTx)
   def execute[T](f: ODatabaseDocumentTx => T): T
 }
 
@@ -60,12 +61,16 @@ class LocalDatabasePool extends DatabasePool {
     pool.close()
   }
 
-  def get: ODatabaseDocumentTx = {
+  override def acquire: ODatabaseDocumentTx = {
     pool.acquire(path, "admin", "admin")
   }
 
-  def execute[T](f: ODatabaseDocumentTx => T): T = {
-    val db = get
+  override def release(db: ODatabaseDocumentTx) {
+    db.close
+  }
+
+  override def execute[T](f: ODatabaseDocumentTx => T): T = {
+    val db = acquire
     try {
       f(db)
     } finally {

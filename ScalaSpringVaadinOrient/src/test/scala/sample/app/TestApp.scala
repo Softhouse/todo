@@ -33,12 +33,12 @@ class TestApp {
 
   @Test
   def testLogin() {
-    //    app \\ "loginForm" ! VLoginEvent("TestUser", "TestPassword")
-    //    app \\ Caption(MSG.LOGIN_REGISTER) ! VClickEvent()
-    //    (app \\ (Value(MSG.REGISTER_USERNAME) + 1): TextField).setValue("TestUser")
-    //    (app \\ (Value(MSG.REGISTER_PASSWORD) + 1): TextField).setValue("TestPassword")
-    //    app \\ Caption(MSG.REGISTER_BUTTON) ! VClickEvent()
-    //    app \\ "loginForm" ! VLoginEvent("TestUser", "TestPassword")
-    //    app \\ Caption(MSG.MENU_LOGOUT) ! VClickEvent()
+    app \\ "loginForm" ! VLoginEvent("TestUser", "TestPassword")
+    app \\ Caption(MSG.LOGIN_REGISTER) ! VClickEvent()
+    (app \\ (Value(MSG.REGISTER_USERNAME) + 1): TextField).setValue("TestUser")
+    (app \\ (Value(MSG.REGISTER_PASSWORD) + 1): TextField).setValue("TestPassword")
+    app \\ Caption(MSG.REGISTER_BUTTON) ! VClickEvent()
+    app \\ "loginForm" ! VLoginEvent("TestUser", "TestPassword")
+    app \\ Caption(MSG.MENU_LOGOUT) ! VClickEvent()
   }
 }

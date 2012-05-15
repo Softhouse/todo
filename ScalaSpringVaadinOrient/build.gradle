@@ -18,11 +18,11 @@ configurations {
 
 dependencies {
 	// Libraries needed to run the scala tools
-	scalaTools 'org.scala-lang:scala-compiler:2.9.1'
-	scalaTools 'org.scala-lang:scala-library:2.9.1'
+	scalaTools 'org.scala-lang:scala-compiler:2.9.2'
+	scalaTools 'org.scala-lang:scala-library:2.9.2'
 
 	// Libraries needed for scala api
-	compile 'org.scala-lang:scala-library:2.9.1'
+	compile 'org.scala-lang:scala-library:2.9.2'
 	compile 'org.scalaj:scalaj-collection_2.9.1:1.2'
 	
 	// Vaadin libraries
@@ -37,8 +37,8 @@ dependencies {
 	compile 'se.softhouse.garden:orchid-spring:0.6-SNAPSHOT'
 	
 	// OrientDB
-	compile 'com.orientechnologies:orient-commons:1.0rc9'
-	compile 'com.orientechnologies:orientdb-core:1.0rc9'
+	compile 'com.orientechnologies:orient-commons:1.0'
+	compile 'com.orientechnologies:orientdb-core:1.0'
 
 	// Needed to compile the widgetset
 	gwtTools 'com.google.gwt:gwt-user:2.3.0'

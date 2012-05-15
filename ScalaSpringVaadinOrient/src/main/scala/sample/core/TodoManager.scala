@@ -31,6 +31,7 @@ import scala.collection.JavaConversions.{ iterableAsScalaIterable => _, _ }
 import scala.collection.mutable.MutableList
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx
 import DomainConversions._
+import javax.annotation.PostConstruct
 
 /**
  * @author Mikael Svahn
@@ -41,18 +42,23 @@ class TodoManager {
 
   @transient @Resource val dbpool: DatabasePool = null
 
-  def save(todo: Todo): Todo = {
-    dbpool.execute(_ => (todo: ODocument).save())
+  private var SCHEMA_NAME = "Todo"
+
+  @PostConstruct
+  def init() {
+    dbpool.execute(db =>
+      if (db.getMetadata.getSchema.getClass(SCHEMA_NAME) == null)
+        db.getMetadata.getSchema.createClass(SCHEMA_NAME))
   }
 
   def list(userId: ORID): List[Todo] = {
     dbpool.execute(db => {
-      val cmd: OCommandRequest = db.command(new OSQLSynchQuery[ODocument]("select * from Todo where user = ?"))
+      val cmd: OCommandRequest = db.command(new OSQLSynchQuery[ODocument]("select * from " + SCHEMA_NAME + " where user = ?"))
       for (doc <- (cmd.execute(userId): java.util.List[ODocument])) yield (doc: Todo)
     })
   }
 
-  def load(id: ORID): Todo = {
-    dbpool.execute(db => (db.load(id): ODocument))
-  }
+  def load(id: ORID): Todo = dbpool.execute(db => (db.load(id): ODocument))
+
+  def save(todo: Todo): Todo = dbpool.execute(_ => toTodo((toDoc(todo).save())))
 }

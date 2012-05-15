@@ -54,6 +54,13 @@ class MemoryDatabasePool extends DatabasePool {
     db
   }
 
+  override def acquire: ODatabaseDocumentTx = {
+    db
+  }
+
+  override def release(db: ODatabaseDocumentTx) {
+  }
+
   override def execute[T](f: ODatabaseDocumentTx => T): T = {
     f(db)
   }
