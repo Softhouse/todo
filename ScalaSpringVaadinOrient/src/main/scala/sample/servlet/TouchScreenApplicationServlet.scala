@@ -19,10 +19,23 @@
 
 package sample.servlet
 
+import com.vaadin.terminal.gwt.server.ApplicationServlet
+import java.io.BufferedWriter
+import javax.servlet.http.HttpServletRequest
+
 /**
  * @author mis
  *
  */
-class TouchScreenApplicationServlet {
+class TouchScreenApplicationServlet extends ApplicationServlet {
+
+  override def writeAjaxPageHtmlHeader(page: BufferedWriter, title: String, themeUri: String, request: HttpServletRequest) {
+    page.write("<meta content=\"user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0;\" name=\"viewport\"/>\n");
+    page.write("<meta content=\"yes\" name=\"apple-touch-fullscreen\">");
+    page.write("<meta content=\"yes\" name=\"apple-mobile-web-app-capable\">");
+    page.write("<meta content=\"black\" name=\"apple-mobile-web-app-status-bar-style\">");
+
+    super.writeAjaxPageHtmlHeader(page, title, themeUri, request);
+  }
 
 }

@@ -2,3 +2,6 @@
 /.gradle
 /.externalToolBuilders
 /.cache
+/.classpath
+/.project
+/.settings
