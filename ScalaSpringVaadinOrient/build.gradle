@@ -1,6 +1,17 @@
 apply plugin: 'scala'
 apply plugin: 'war'
 apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
+
+eclipse {
+	project {
+		name = "todo"
+		natures "org.springframework.ide.eclipse.core.springnature"
+	}
+	classpath {
+		containers += 'org.scala-ide.sdt.launching.SCALA_CONTAINER'
+	}
+}
 
 repositories {
 	mavenCentral()

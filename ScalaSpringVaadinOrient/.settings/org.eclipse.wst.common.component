@@ -1,12 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="ScalaSpringVaadinOrient">
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/scala"/>
-        <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/scala"/>
-        <property name="java-output-path" value="/ScalaSpringVaadinOrient/target/classes"/>
-        <property name="context-root" value="ScalaSpringVaadinOrient"/>
-    </wb-module>
+<project-modules id="moduleCoreId" project-version="2.0">
+	<wb-module deploy-name="todo">
+		<property name="context-root" value="ScalaSpringVaadinOrient"/>
+		<wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/resources"/>
+		<wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/scala"/>
+		<wb-resource deploy-path="/" source-path="src/main/webapp"/>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/com.orientechnologies/orientdb-core/1.0/jar/a278f75c058a8a5bf3e19463264b916aab7c437/orientdb-core-1.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.scala-lang/scala-library/2.9.2/jar/55cf429e92d45524a548929a9d6e790205a0e61/scala-library-2.9.2.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.slf4j/jcl-over-slf4j/1.6.1/jar/99c61095a14dfc9e47a086068033c286bf236475/jcl-over-slf4j-1.6.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/se.softhouse.garden/orchid-commons/0.4-SNAPSHOT/jar/95bf9699ebb2c1d734a3403ab7c142d8a6c14153/orchid-commons-0.4-SNAPSHOT.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-expression/3.1.0.RELEASE/jar/d226f5e14c7c775b97db275950786c083290b983/spring-expression-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/log4j/log4j/1.2.16/bundle/7999a63bfccbc7c247a9aea10d83d4272bd492c6/log4j-1.2.16.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/aopalliance/aopalliance/1.0/jar/235ba8b489512805ac13a8f9ea77a1ca5ebe3e8/aopalliance-1.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-aspects/3.1.0.RELEASE/jar/42ca93f38ad1bdad11a1a42c5ea8c0f537584b20/spring-aspects-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.slf4j/slf4j-log4j12/1.6.1/jar/bd245d6746cdd4e6203e976e21d597a46f115802/slf4j-log4j12-1.6.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.scalaj/scalaj-collection_2.9.1/1.2/jar/3836d1404524c2965186c163a053bc39d4dbccd0/scalaj-collection_2.9.1-1.2.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-web/3.1.0.RELEASE/jar/c50458fccc24b87170f6557765c6720a489b5eb2/spring-web-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/com.vaadin/vaadin/6.7.6/jar/e34f0871a6905c45a28ac3f05f3bb8573cec3db0/vaadin-6.7.6.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-context-support/3.1.0.RELEASE/jar/379bb71a6eb9f1a965cd7d6d94524deab2a3da07/spring-context-support-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/javax.persistence/com.springsource.javax.persistence/1.0.0/jar/718c5ca2c9c1b7440eaa75b2275ac9d70d8ab069/com.springsource.javax.persistence-1.0.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-core/3.1.0.RELEASE/jar/3a18c725dd321e457cfb48547d40c2862216bb3b/spring-core-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.slf4j/slf4j-api/1.6.1/jar/6f3b8a24bf970f17289b234284c94f43eb42f0e4/slf4j-api-1.6.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.aspectj/aspectjweaver/1.6.10/jar/d5e68c96e39ac9a31328bce0e77f2cbe674d4f55/aspectjweaver-1.6.10.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-beans/3.1.0.RELEASE/jar/d12bb11cc2469cca2d8ba33d86d188733544d7e0/spring-beans-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.vaadin.addons/scaladin/1.0.0/jar/de0ee2c82b0a8da103dd73d2c2aa20d2febcf8f4/scaladin-1.0.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-context/3.1.0.RELEASE/jar/d36e9ab580dccc8311704bc11f2434f230bdec28/spring-context-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/commons-logging/commons-logging/1.1.1/jar/5043bfebc3db072ed80fbd362e7caf00e885d8ae/commons-logging-1.1.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.vaadin.addons/searchfield/2.2.0/jar/d56af474e9159a113b35d015230ded76c936e3fb/searchfield-2.2.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.aspectj/aspectjrt/1.6.10/jar/30217090975652be712dcc9f0499c1cab1344927/aspectjrt-1.6.10.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/cglib/cglib-nodep/2.2/jar/59afed7ab65e7ec6585d5bc60556c3cbd203532b/cglib-nodep-2.2.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/com.orientechnologies/orient-commons/1.0/jar/c57eb77bb24ac5028592dcf252de47c42c57f1e3/orient-commons-1.0.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.vaadin.addons/refresher/1.1.1/jar/9a9eab0abd11844e62cc7ec96e19fa53ae7ecdd6/refresher-1.1.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.vaadin.addons/popupbutton/1.2.1/jar/c3d89875020a3985aae841657e7b5080e9cca6d6/popupbutton-1.2.1.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.vaadin.addons/filteringtable/0.5.3/jar/d2fa7527cf7b6729c6ccc1aa6fcc877459a0fdd9/filteringtable-0.5.3.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-asm/3.1.0.RELEASE/jar/de7cf38491d3243c98c7d61ccdb40756df92c6d1/spring-asm-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-aop/3.1.0.RELEASE/jar/5d998ce239b87cbf66fd18a01dad854de13e2f06/spring-aop-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-webmvc/3.1.0.RELEASE/jar/9a9c88df8825ff3c2ecb79f7ac29ad1e229e6fd6/spring-webmvc-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-test/3.1.0.RELEASE/jar/23270c97d3582ce36d3e4a415b836ad16f848281/spring-test-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/se.softhouse.garden/orchid-spring/0.6-SNAPSHOT/jar/70e06921f7f2d9f5a84af905a48fd8461f305b92/orchid-spring-0.6-SNAPSHOT.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+		<dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib//Users/mis/.gradle/caches/artifacts-13/filestore/org.springframework/spring-tx/3.1.0.RELEASE/jar/825dd46d268cc89eb282885ceb1b1664b31a43d3/spring-tx-3.1.0.RELEASE.jar">
+			<dependency-type>uses</dependency-type>
+		</dependent-module>
+	</wb-module>
 </project-modules>
