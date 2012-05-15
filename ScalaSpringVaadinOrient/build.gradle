@@ -1,5 +1,6 @@
 apply plugin: 'scala'
 apply plugin: 'war'
+apply plugin: 'eclipse'
 
 repositories {
 	mavenCentral()
